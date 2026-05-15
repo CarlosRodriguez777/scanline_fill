@@ -7,7 +7,7 @@ class ScanlineFill {
      * @param {CanvasRenderingContext2D} ctx Contexto 2D del canvas donde se dibujará.
      */
     constructor(ctx) {
-        this.ctx = ctx; // [cite: 69, 70]
+        this.ctx = ctx; //
     }
 }
 
@@ -67,5 +67,19 @@ class ScanlineFill {
                 invSlope
             });
         }
+        // 2. OBTENER RANGO VERTICAL TOTAL
+        const ys = polygon.map(p => p.y); 
+        const miny = Math.min(...ys); 
+        const maxy = Math.max(...ys); 
+
+        // 3. ACTIVE EDGE TABLE (AET)
+        let activeEdgeTable = []; 
+
+        this.ctx.fillStyle = color; 
+
+        // 4. RECORRER SCANLINES
         
+        for (let y = miny; y <= maxy; y++) {
+          
+        }
     }
