@@ -9,7 +9,6 @@ class ScanlineFill {
     constructor(ctx) {
         this.ctx = ctx; //
     }
-}
 
 /**
      * MÉTODO PRINCIPAL
@@ -17,7 +16,7 @@ class ScanlineFill {
      * @param {Array} polygon Array de vértices del poligono.
      * @param {String} color Color de relleno.
      */
-    fill(polygon, color = "black"); {
+    fill(polygon, color = "black") {
         // 1. CONSTRUIR EDGE TABLE (ET)
         // La Edge Table organiza las aristas según la coordenada Y minima de cada una.
         // ET[y] = lista de aristas que comienzan en y
@@ -80,6 +79,69 @@ class ScanlineFill {
         // 4. RECORRER SCANLINES
         
         for (let y = miny; y <= maxy; y++) {
-          
-        }
-    }
+          // 4.1 AGREGAR NUEVAS ARISTAS ACTIVAS
+       
+            if (edgeTable[y]) {
+                activeEdgeTable.push(...edgeTable[y]); 
+            }
+
+            // 4.2 ELIMINAR ARISTAS TERMINADAS
+            activeEdgeTable = activeEdgeTable.filter(
+                edge => edge.ymax > y
+            );
+
+            // 4.3 ORDENAR POR X
+            
+            activeEdgeTable.sort((a, b) => a.x - b.x);
+
+            // 4.4 RELLENAR ENTRE PARES
+            for (let i = 0; i < activeEdgeTable.length; i += 2) {
+                
+                if (i + 1 >= activeEdgeTable.length) {
+                    break; 
+                }
+
+                const xStart = Math.ceil(activeEdgeTable[i].x);
+                
+                const xEnd = Math.floor(activeEdgeTable[i + 1].x);
+
+                
+                this.ctx.fillRect(
+                    xStart, 
+                    y, 
+                    xEnd - xStart + 1, 
+                    1 
+                );
+            }
+
+            // 4.5 ACTUALIZAR INTERSECCIONES X
+            
+            for (const edge of activeEdgeTable) {
+                edge.x += edge.invSlope; 
+            }
+        } 
+    } 
+}
+const canvas = document.getElementById("canvas"); 
+const ctx = canvas.getContext("2d"); 
+
+const scanline = new ScanlineFill(ctx); 
+const polygon = [
+    {x: 100, y: 100}, 
+    {x: 300, y: 120}, 
+    {x: 350, y: 250}, 
+    {x: 250, y: 350}, 
+    {x: 120, y: 300}];
+
+
+ctx.beginPath(); 
+ctx.moveTo(polygon[0].x, polygon[0].y); 
+for (let i = 1; i < polygon.length; i++) {
+    ctx.lineTo(polygon[i].x, polygon[i].y); 
+}
+ctx.closePath();
+ctx.strokeStyle = "red"; 
+ctx.lineWidth = 2; 
+ctx.stroke(); 
+scanline.fill(polygon, "skyblue"); 
+        
